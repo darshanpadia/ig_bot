@@ -26,30 +26,55 @@ class InstagramBot:
         self.nav_user(user)
         time.sleep(3)
         follow_button = self.driver.find_element_by_xpath("//button[contains(text(), 'Follow')]")
-        print(follow_button).text()
+        if follow_button.text == 'Follow':
+            follow_button.click()
 
-    def nav_posts_by_tags(self,hashtag):
-        post_urls = []
+    def nav_post_urls_by_tags(self,hashtag,scrolls):
         self.driver.get(f"https://www.instagram.com/explore/tags/{ hashtag }/")
-        for i in range(0, 3):
+        post_urls = self.find_post_urls(scrolls)
+        return post_urls
+
+    def nav_post_urls_by_user_profile(self,profile_name,scrolls):
+        self.driver.get(f"https://www.instagram.com/{ profile_name }/")
+        post_urls = self.find_post_urls(scrolls)
+        return post_urls
+        
+    def scroll_pages(self,scrolls):
+        for i in range(0, scrolls):
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight)')
             time.sleep(2)
-        a_tags = self.driver.find_elements_by_tag_name('a')
-        for tag in a_tags:
-            post_url = tag.get_attribute('href')
+
+
+
+    def find_post_urls(self,scrolls):
+        post_urls = []
+        self.scroll_pages(scrolls)
+        posts = self.driver.find_elements_by_tag_name('a')
+        for post in posts:
+            post_url = post.get_attribute('href')
             if len(post_url) > 26:
                 if post_url[26] == 'p':
                     post_urls.append(post_url)
         return post_urls
 
-    def like_post(self,post_urls):
-        for url in post_urls:
-            self.driver.get(url)
-            like_x_path = '//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button/span'
-            like_button = self.driver.find_element_by_xpath(like_x_path)
+
+
+    def like_post(self,url):  
+        self.driver.get(url)
+        like_x_path = '//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button/span'
+        like_button = self.driver.find_element_by_xpath(like_x_path)
+        current = like_button.get_attribute("aria-label")
+        if current == 'Like':
             like_button.click()
-            time.sleep(8)
-                    
+        
+    def like_posts_in_bunch(self,post_urls):
+        for url in post_urls:
+            ig_bot.like_post(url)
+
+
+    
+        
+            
 
 
 
@@ -57,7 +82,8 @@ class InstagramBot:
 if __name__ == '__main__':
     ig_bot = InstagramBot('codezytech', 'codezy@tech')
     time.sleep(3)
-    developer_posts = ig_bot.nav_posts_by_tags('developer')
-    ig_bot.like_post(developer_posts)
-    
+    developer_posts_urls = ig_bot.nav_post_urls_by_tags('developer',0)
+    ig_bot.like_posts_in_bunch(developer_posts_urls)
+    camestry_k_profile = ig_bot.nav_post_urls_by_user_profile('camestry_k',0)
+    ig_bot.like_posts_in_bunch(camestry_k_profile)
     
