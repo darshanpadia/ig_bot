@@ -29,22 +29,10 @@ class InstagramBot:
         if follow_button.text == 'Follow':
             follow_button.click()
 
-    def nav_post_urls_by_tags(self,hashtag,scrolls):
-        self.driver.get(f"https://www.instagram.com/explore/tags/{ hashtag }/")
-        post_urls = self.find_post_urls(scrolls)
-        return post_urls
-
-    def nav_post_urls_by_user_profile(self,profile_name,scrolls):
-        self.driver.get(f"https://www.instagram.com/{ profile_name }/")
-        post_urls = self.find_post_urls(scrolls)
-        return post_urls
-        
     def scroll_pages(self,scrolls):
         for i in range(0, scrolls):
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight)')
             time.sleep(2)
-
-
 
     def find_post_urls(self,scrolls):
         post_urls = []
@@ -57,8 +45,16 @@ class InstagramBot:
                     post_urls.append(post_url)
         return post_urls
 
+    def nav_post_urls_by_tags(self,hashtag,scrolls):
+        self.driver.get(f"https://www.instagram.com/explore/tags/{ hashtag }/")
+        post_urls = self.find_post_urls(scrolls)
+        return post_urls
 
-
+    def nav_post_urls_by_user_profile(self,profile_name,scrolls):
+        self.driver.get(f"https://www.instagram.com/{ profile_name }/")
+        post_urls = self.find_post_urls(scrolls)
+        return post_urls
+        
     def like_post(self,url):  
         self.driver.get(url)
         like_x_path = '//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button/span'
@@ -73,7 +69,8 @@ class InstagramBot:
 
 
     
-        
+    def nav_post_comments(self,post_url):
+        self.driver.get(f"{post_url}comments/")
             
 
 
@@ -82,8 +79,8 @@ class InstagramBot:
 if __name__ == '__main__':
     ig_bot = InstagramBot('codezytech', 'codezy@tech')
     time.sleep(3)
-    developer_posts_urls = ig_bot.nav_post_urls_by_tags('developer',0)
-    ig_bot.like_posts_in_bunch(developer_posts_urls)
-    camestry_k_profile = ig_bot.nav_post_urls_by_user_profile('camestry_k',0)
-    ig_bot.like_posts_in_bunch(camestry_k_profile)
-    
+    #developer_posts_urls = ig_bot.nav_post_urls_by_tags('developer',0)
+    #ig_bot.like_posts_in_bunch(developer_posts_urls)
+    #camestry_k_profile = ig_bot.nav_post_urls_by_user_profile('camestry_k',0)
+    #ig_bot.like_posts_in_bunch(camestry_k_profile)
+    ig_bot.nav_post_comments('https://www.instagram.com/p/B6C9xUchlUK/')
